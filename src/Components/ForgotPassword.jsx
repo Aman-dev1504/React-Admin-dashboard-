@@ -38,7 +38,7 @@ const ForgotPassword= ({ id, name, accountType }) => {
 
   return (
     <>
-      <h3>Forgot Password</h3>
+      <h3 style={{color:"#28282B"}}>Forgot Password</h3>
 
       <TextField
         label="ID"
