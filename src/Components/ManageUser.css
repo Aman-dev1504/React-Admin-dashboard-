@@ -1,0 +1,84 @@
+.wrapTable {
+    max-width: 1300px;
+    max-height: 800px;
+    overflow-y: auto;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .tableContainer {
+    margin-top: 10px;
+    overflow-x: auto; /* Enable horizontal scrolling on small screens */
+  }
+  
+  .table {
+    width: 100%;
+    border: 1px solid #ddd;
+    font-family: Poppins;
+  }
+  
+  
+ .td {
+    padding: 10px;
+    text-align: left;
+  }
+  
+ .th {
+    background-color: #0ba360;
+    color: #fff !important;
+  }
+  
+  .sub-heading{
+    font-size: 20px;
+    font-weight: 600;
+
+    color: #858585;
+  }
+  .css-1ygcj2i-MuiTableCell-root{
+    color: #f9f9f9 !important;
+  }
+  .tc{
+    border: 1px solid #ddd;
+  }
+  .tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .tr:hover {
+    background-color: #e9e9e9;
+    cursor: pointer;
+  }
+  
+  .actions {
+    display: flex;
+    align-items: center;
+  }
+  
+  .editIcon {
+    color: #1e88e5;
+    
+    text-align: center;
+    cursor: pointer;
+  }
+  
+  .deleteIcon {
+    color: #e53935;
+    cursor: pointer;
+  }
+  
+  /* Responsive Styles */
+  @media screen and (max-width: 600px) {
+    .tableContainer {
+      overflow-x: auto;
+    }
+    
+    .table {
+      font-size: 12px;
+    }
+  
+    .th,
+    .td {
+      padding: 8px;
+    }
+  }
+  

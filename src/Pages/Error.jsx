@@ -12,7 +12,7 @@ const Error404 = () => {
   };
 
   return (
-    <div className="container">
+    <div className="containerError">
       <img src={Error} alt="Error" className="pageNotfoundImage"/>
       <h2 className="pageNotfound">Page not found</h2>
       <Button onClick={redirectToLogin} variant="contained">Go to Login</Button>
