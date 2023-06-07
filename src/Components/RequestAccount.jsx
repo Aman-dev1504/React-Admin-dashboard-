@@ -139,16 +139,9 @@ const RequestAccount = () => {
   Forgot Password
 </Button>
   )}
+ 
   <Button
-    variant="outlined"
-    color="success"
-    onClick={() => handleDecline(request.id)}
-    className='createBtn'
-  >
-    Mark Done
-  </Button>
-  <Button
-    variant="outlined"
+    variant="contained"
     color="error"
     onClick={() => handleDecline(request.id)}
   >
