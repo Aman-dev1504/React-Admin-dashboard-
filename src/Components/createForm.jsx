@@ -110,12 +110,12 @@ const CreateForm = ({ onCreate, onClose }) => {
                 }
           >
             <FormControlLabel
-              value="active"
+              value="Active"
               control={<Radio />}
               label="Active"
             />
             <FormControlLabel
-              value="blocked"
+              value="Blocked"
               control={<Radio />}
               label="Blocked"
             />

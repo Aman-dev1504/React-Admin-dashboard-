@@ -268,7 +268,9 @@ const ManageUsers = () => {
       )}
 
       <h2 style={{ color: "#28282B" }}>Manage Users</h2>
+      <h3 className="sub-heading">Students</h3>
       <div className="btn-box">
+      
       <Button variant="contained" className="Update-btn" onClick={handleCreateFormOpen}>
           Create New Student
         </Button>
@@ -290,7 +292,7 @@ const ManageUsers = () => {
       </Button>
        */}
 
-      <h3 className="sub-heading">Students</h3>
+      
       <div className="wrapTable">
         <TableContainer className="tableContainer">
           <Table className="table">

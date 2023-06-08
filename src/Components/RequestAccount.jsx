@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { ref, onValue, remove, set } from "firebase/database";
+import { useState, useEffect } from "react";
+import { ref, onValue, remove, set, push } from "firebase/database";
 import {
   Table,
   TableContainer,
@@ -8,18 +8,20 @@ import {
   TableCell,
   TableBody,
   Button,
- 
 } from "@mui/material";
+import { Snackbar, Alert } from "@mui/material";
 import { database } from "../firebaseConfig";
-import ForgotPassword from "./ForgotPassword";
 import "../Components/RequestAccount.css";
+import CreateForm from "../Components/createForm";
+import ForgotPassword from "./ForgotPassword";
+
 const RequestAccount = () => {
   const [requests, setRequests] = useState([]);
-  const forgotPasswordRef = useRef(null);
-  const [forgotId, setForgotId] = useState("");
-  const [forgotName, setForgotName] = useState("");
-  const [forgotAccountType, setForgotAccountType] = useState("");
-
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   useEffect(() => {
     const requestsRef = ref(database, "Requests");
 
@@ -38,22 +40,18 @@ const RequestAccount = () => {
               );
               setRequests(requestsArray);
             } else {
-              // Handle case when "Requests" collection is empty
               console.log("Requests collection is empty");
             }
           } catch (error) {
-            // Handle any error that occurs during data retrieval
             console.error("Error fetching requests:", error);
           }
         },
         (error) => {
-          // Handle any Firebase database error
           console.error("Firebase database error:", error);
         }
       );
 
       return () => {
-        // Unsubscribe from Firebase listener when the component unmounts
         unsubscribe();
       };
     };
@@ -61,47 +59,56 @@ const RequestAccount = () => {
     fetchRequests();
   }, []);
 
-  const handleCreate = (id, type) => {
-    const request = requests.find((req) => req.id === id);
-    if (!request) return;
-
-    if (type === "student") {
-      // Add user to the Students collection
-      const { name, requestType } = request;
-      const studentData = {
-        name,
-        requestType,
-        // Add any other properties specific to students
-      };
-
-      // Write the student data to the Students collection in Firebase
-      set(ref(database, "Students", id), studentData);
-    } else if (type === "instructor") {
-      // Add user to the Instructors collection
-      const { name, requestType } = request;
-      const instructorData = {
-        name,
-        requestType,
-        // Add any other properties specific to instructors
-      };
-
-      // Write the instructor data to the Instructors collection in Firebase
-      set(ref(database, "Instructors", id), instructorData);
-    }
-  };
-
-  //handle Decline
-
   const handleDecline = (id) => {
-    // Remove the request from the Requests collection in Firebase
-    remove(ref(database, "Requests", id));
+    const requestsRef = ref(database, `Requests/${id}`);
+
+    remove(requestsRef)
+      .then(() => {
+        console.log("Student deleted successfully");
+      })
+      .catch((error) => {
+        console.error("Error deleting student:", error);
+      });
   };
-  const handleForgot = (id, name, type) => {
-    setForgotId(id);
-    setForgotName(name);
-    setForgotAccountType(type);
-    forgotPasswordRef.current.scrollIntoView({ behavior: "smooth" });
+
+  const handleForgot = (request) => {
+    setSelectedRequest(request);
   };
+
+  const handleCreate = (newStudent) => {
+    const newStudentId = push(ref(database, "Students")).key;
+    const newStudentRef = ref(database, `Students/${newStudentId}`);
+
+    set(newStudentRef, newStudent)
+      .then(() => {
+        console.log("Student created successfully");
+      })
+      .catch((error) => {
+        console.error("Error creating student:", error);
+      });
+  };
+
+  const handleCreateFormOpen = () => {
+    setIsCreateFormOpen(true);
+  };
+
+  const handleCreateFormClose = () => {
+    setIsCreateFormOpen(false);
+  };
+
+  const handleForgotPasswordClose = () => {
+    setSelectedRequest(null);
+  };
+  const handleSnackbarOpen = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   return (
     <>
       <h2 style={{ color: "#28282B" }}>Request Accounts</h2>
@@ -129,7 +136,7 @@ const RequestAccount = () => {
                       <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => handleCreate(request.id, request.type)}
+                        onClick={handleCreateFormOpen}
                         className="createBtn"
                       >
                         Create
@@ -138,19 +145,16 @@ const RequestAccount = () => {
                       <Button
                         variant="contained"
                         color="primary"
-                        onClick={() =>
-                          handleForgot(request.id, request.name, request.type)
-                        }
+                        onClick={() => handleForgot(request)}
                         className="createBtn"
                       >
                         Forgot Password
                       </Button>
                     )}
-
                     <Button
                       variant="contained"
                       color="error"
-                      onClick={() => handleDecline(request.id)}
+                      onClick={() => handleDecline(request.id, "request")}
                     >
                       Decline
                     </Button>
@@ -161,13 +165,27 @@ const RequestAccount = () => {
           </Table>
         </TableContainer>
       </div>
-      <div ref={forgotPasswordRef}>
+      {selectedRequest && (
         <ForgotPassword
-          id={forgotId}
-          name={forgotName}
-          accountType={forgotAccountType}
+          id={selectedRequest.id}
+          name={selectedRequest.name}
+          accountType={selectedRequest.type}
+          onClose={handleForgotPasswordClose}
+          onSnackbarOpen={handleSnackbarOpen}
         />
-      </div>
+      )}
+      {isCreateFormOpen && (
+        <CreateForm onCreate={handleCreate} onClose={handleCreateFormClose} />
+      )}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
