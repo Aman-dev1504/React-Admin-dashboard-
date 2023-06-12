@@ -18,7 +18,7 @@ export default function SignOut() {
   };
 
   return (
-    <Button onClick={handleSignOut} variant="contained" color="error" sx={{ borderColor: '#fff', color: '#fff', margin: 1 }}>
+    <Button onClick={handleSignOut} variant="contained" color="error" sx={{ borderColor: '#fff', color: '#fff', margin: 1 ,fontFamily:"Poppins"}}>
       Logout
     </Button>
   )

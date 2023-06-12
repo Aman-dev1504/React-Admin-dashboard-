@@ -89,7 +89,8 @@ export default function Dashboard() {
           <Toolbar
             sx={{
               pr: "24px",
-              bgcolor: "#0ba360",
+              backgroundColor: "#F4D03F",
+              backgroundImage: "linear-gradient(45deg, #16A085 10%, #F4D03F 100%)",
               color:"#fff" // keep right padding when drawer closed
             }}
           >

@@ -9,6 +9,7 @@ import { AuthProvider, AuthContext } from "./Auth/AuthContext";
 import SignIn from "./Pages/Signin";
 import Dashboard from "./Pages/Dashboard";
 import ErrorPage from "./Pages/Error";
+import "./App.css";
 
 const App = () => {
   const ProtectedRoute = ({ component: Component, ...rest }) => {

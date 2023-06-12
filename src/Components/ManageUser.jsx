@@ -23,12 +23,18 @@ import { database } from "../firebaseConfig";
 import "../Components/ManageUser.css";
 import CloseIcon from "@mui/icons-material/Close";
 import CreateForm from "../Components/createForm";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 const ManageUsers = () => {
   const [students, setStudents] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [editedStudent, setEditedStudent] = useState(null);
+  const [editedTeacher, setEditedTeacher] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
+  const [showEditFormTeacher, setShowEditFormTeacher] = useState(false);
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   useEffect(() => {
     const studentsRef = ref(database, "Students");
     const teachersRef = ref(database, "Instructors");
@@ -77,55 +83,69 @@ const ManageUsers = () => {
   }, []);
 
   const handleEdit = (id, role) => {
-    const student = students.find((student) => student.id === id);
-
-    // Set the edited student and toggle show edit form
-    setEditedStudent(student);
-    setShowEditForm(true);
-    //editRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (role === "Student") {
+      const student = students.find((student) => student.id === id);
+      setEditedStudent(student);
+      setShowEditForm(true);
+    } else if (role === "Teacher") {
+      const teacher = teachers.find((teacher) => teacher.id === id);
+      setEditedTeacher(teacher);
+      setShowEditFormTeacher(true);
+    }
   };
 
   const handleUpdate = () => {
-    const studentRef = ref(database, `Students/${editedStudent.id}`);
-
-    update(studentRef, {
-      name: editedStudent.name,
-      status: editedStudent.status,
-      contactNo: editedStudent.contactNo,
-      userName: editedStudent.userName,
-      password: editedStudent.password,
-
-      // Update other fields here
-    })
-      .then(() => {
-        // Update successful
-        console.log("Student updated successfully");
-        // Close the edit form
-        setShowEditForm(false);
-      })
-      .catch((error) => {
-        // Error occurred during update
-        console.error("Error updating student:", error);
-        // Handle the error as needed (e.g., display an error message)
-      });
-    setEditedStudent(null);
+    if (editedStudent && editedStudent.role === "Student") {
+      const studentRef = ref(database, `Students/${editedStudent.id}`);
+      update(studentRef, editedStudent)
+        .then(() => {
+          console.log("Student updated successfully");
+        })
+        .catch((error) => {
+          console.error("Error updating student:", error);
+        });
+    } else if (editedTeacher) {
+      const teacherRef = ref(database, `Instructors/${editedTeacher.id}`);
+      update(teacherRef, editedTeacher)
+        .then(() => {
+          console.log("Teacher updated successfully");
+          setSnackbarMessage("Teacher updated successfully");
+          setSnackbarOpen(true);
+          setShowEditFormTeacher(false);
+        })
+        .catch((error) => {
+          console.error("Error updating teacher:", error);
+        });
+    } else {
+      console.error("Invalid role or data");
+    }
   };
+
   const handleDelete = (id, role) => {
-    const studentRef = ref(database, `Students/${id}`);
+    let databasePath = "";
 
-    remove(studentRef)
+    if (role === "Teacher") {
+      databasePath = `Instructors/${id}`;
+    } else if (role === "Student") {
+      databasePath = `Students/${id}`;
+    } else {
+      console.error("Invalid role");
+      return;
+    }
+
+    const userRef = ref(database, databasePath);
+
+    remove(userRef)
       .then(() => {
-        // Deletion successful
-        console.log("Student deleted successfully");
+        console.log(`${role} deleted successfully with ID: ${id}`);
       })
       .catch((error) => {
-        // Error occurred during deletion
-        console.error("Error deleting student:", error);
-        // Handle the error as needed (e.g., display an error message)
+        console.error(`Error deleting ${role} with ID: ${id}`, error);
       });
   };
+
   const handlePasswordVisibilityToggle = (id, role) => {
-    if (role === "student") {
+    if (role === "Student") {
       setStudents((prevStudents) =>
         prevStudents.map((student) =>
           student.id === id
@@ -133,7 +153,7 @@ const ManageUsers = () => {
             : student
         )
       );
-    } else if (role === "teacher") {
+    } else if (role === "Teacher") {
       setTeachers((prevTeachers) =>
         prevTeachers.map((teacher) =>
           teacher.id === id
@@ -143,19 +163,34 @@ const ManageUsers = () => {
       );
     }
   };
-  const handleCreate = (newStudent) => {
-    const newStudentId = push(ref(database, "Students")).key;
-    const newStudentRef = ref(database, `Students/${newStudentId}`);
+  const handleCreate = (newUser) => {
+    const { role, ...userData } = newUser;
 
-    set(newStudentRef, newStudent)
+    const newUserId = push(
+      ref(database, role === "Student" ? "Students" : "Instructors")
+    ).key;
+    const newUserRef = ref(
+      database,
+      `${role === "Student" ? "Students" : "Instructors"}/${newUserId}`
+    );
+
+    set(newUserRef, userData)
       .then(() => {
-        console.log("Student created successfully");
+        console.log(`${role} created successfully`);
+        setSnackbarMessage(`${role} created successfully`);
+        setSnackbarOpen(true);
       })
       .catch((error) => {
-        console.error("Error creating student:", error);
+        console.error(`Error creating ${role}:`, error);
+        setSnackbarMessage(`Error creating ${role}`);
+        setSnackbarOpen(true);
       });
+
+    setIsCreateFormOpen(false);
   };
- 
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
 
   const handleCreateFormOpen = () => {
     setIsCreateFormOpen(true);
@@ -179,7 +214,6 @@ const ManageUsers = () => {
               </IconButton>
             </div>
 
-            {/* Display the form fields and allow editing */}
             <TextField
               label="Name"
               value={editedStudent.name}
@@ -266,33 +300,150 @@ const ManageUsers = () => {
           </div>
         </div>
       )}
+      {showEditFormTeacher && editedTeacher && (
+        <div className="edit-form">
+          <div className="edit-form-content">
+            <div className="headEdit">
+              <h4>Edit Teacher</h4>
+              <IconButton
+                className="close-icon"
+                onClick={() => setShowEditFormTeacher(false)}
+              >
+                <CloseIcon className="close-icon" />
+              </IconButton>
+            </div>
+
+            {/* Teacher form fields */}
+            {/* Modify the input fields based on your requirements */}
+            <TextField
+              label="Name"
+              value={editedTeacher.name}
+              onChange={(e) =>
+                setEditedTeacher((prevState) => ({
+                  ...prevState,
+                  name: e.target.value,
+                }))
+              }
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Contact Number"
+              value={editedTeacher.contactNo}
+              onChange={(e) =>
+                setEditedTeacher((prevState) => ({
+                  ...prevState,
+                  contactNo: e.target.value,
+                }))
+              }
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Password"
+              value={editedTeacher.password}
+              onChange={(e) =>
+                setEditedTeacher((prevState) => ({
+                  ...prevState,
+                  password: e.target.value,
+                }))
+              }
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Specialization"
+              value={editedTeacher.specialization}
+              onChange={(e) =>
+                setEditedTeacher((prevState) => ({
+                  ...prevState,
+                  specialization: e.target.value,
+                }))
+              }
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Address"
+              value={editedTeacher.address}
+              onChange={(e) =>
+                setEditedTeacher((prevState) => ({
+                  ...prevState,
+                  address: e.target.value,
+                }))
+              }
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Username"
+              value={editedTeacher.username}
+              onChange={(e) =>
+                setEditedTeacher((prevState) => ({
+                  ...prevState,
+                  username: e.target.value,
+                }))
+              }
+              fullWidth
+              margin="normal"
+            />
+            <FormControl component="fieldset">
+              <FormLabel component="legend">Status</FormLabel>
+              <RadioGroup
+                aria-label="account-type"
+                name="accountType"
+                value={editedTeacher.status}
+                onChange={(e) =>
+                  setEditedTeacher((prevState) => ({
+                    ...prevState,
+                    status: e.target.value,
+                  }))
+                }
+              >
+                <FormControlLabel
+                  value="Active"
+                  control={<Radio />}
+                  label="Active"
+                />
+                <FormControlLabel
+                  value="Block"
+                  control={<Radio />}
+                  label="Block"
+                />
+              </RadioGroup>
+            </FormControl>
+            <br />
+            {/* Add other fields as needed */}
+
+            {/* Update button */}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleUpdate}
+              className="Update-btn"
+            >
+              Update
+            </Button>
+          </div>
+        </div>
+      )}
 
       <h2 style={{ color: "#28282B" }}>Manage Users</h2>
-      <h3 className="sub-heading">Students</h3>
       <div className="btn-box">
-      
-      <Button variant="contained" className="Update-btn" onClick={handleCreateFormOpen}>
-          Create New Student
+        <Button
+          variant="contained"
+          className="Update-btn"
+          onClick={handleCreateFormOpen}
+        >
+          Create New User
         </Button>
-      {/* </div> */}
 
-      {/* Render the CreateForm component if isCreateFormOpen is true */}
-      {isCreateFormOpen && (
-        <CreateForm onCreate={handleCreate} onClose={handleCreateFormClose} />
-      )}
-      
+        {isCreateFormOpen && (
+          <CreateForm onCreate={handleCreate} onClose={handleCreateFormClose} />
+        )}
       </div>
-      {/* <Button
-        variant="variant"
-        color="primary"
-        onClick={handleCreate}
-        className="Update-btn"
-      >
-        Create New User
-      </Button>
-       */}
+      <h3 className="sub-heading">Students</h3>
 
-      
       <div className="wrapTable">
         <TableContainer className="tableContainer">
           <Table className="table">
@@ -328,18 +479,18 @@ const ManageUsers = () => {
                   <TableCell className="tc">{student.userName}</TableCell>
                   <TableCell className="tc">
                     <IconButton
-                      onClick={() => handleEdit(student.id, "student")}
+                      onClick={() => handleEdit(student.id, "Student")}
                     >
                       <EditIcon className="editIcon" />
                     </IconButton>
                     <IconButton
-                      onClick={() => handleDelete(student.id, "student")}
+                      onClick={() => handleDelete(student.id, "Student")}
                     >
                       <DeleteIcon className="deleteIcon" />
                     </IconButton>
                     <IconButton
                       onClick={() =>
-                        handlePasswordVisibilityToggle(student.id, "student")
+                        handlePasswordVisibilityToggle(student.id, "Student")
                       }
                     >
                       <VisibilityIcon />
@@ -351,11 +502,9 @@ const ManageUsers = () => {
           </Table>
         </TableContainer>
       </div>
-
+      {/* teachers table */}
       <h3 className="sub-heading"> Teachers</h3>
-      <Button variant="contained" className="Update-btn" onClick={handleCreateFormOpen}>
-          Create New Teacher
-        </Button>
+
       <div className="wrapTable">
         <TableContainer>
           <Table>
@@ -398,18 +547,18 @@ const ManageUsers = () => {
                   <TableCell className="tc">{teacher.address}</TableCell>
                   <TableCell className="tc">
                     <IconButton
-                      onClick={() => handleEdit(teacher.id, "teacher")}
+                      onClick={() => handleEdit(teacher.id, "Teacher")}
                     >
                       <EditIcon className="editIcon" />
                     </IconButton>
                     <IconButton
-                      onClick={() => handleDelete(teacher.id, "teacher")}
+                      onClick={() => handleDelete(teacher.id, "Teacher")}
                     >
                       <DeleteIcon className="deleteIcon" />
                     </IconButton>
                     <IconButton
                       onClick={() =>
-                        handlePasswordVisibilityToggle(teacher.id, "teacher")
+                        handlePasswordVisibilityToggle(teacher.id, "Teacher")
                       }
                     >
                       <VisibilityIcon />
@@ -421,6 +570,20 @@ const ManageUsers = () => {
           </Table>
         </TableContainer>
       </div>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          onClose={handleSnackbarClose}
+          severity={snackbarMessage.includes("Error") ? "error" : "success"}
+        >
+          {snackbarMessage}
+        </MuiAlert>
+      </Snackbar>
     </>
   );
 };

@@ -9,124 +9,167 @@ import {
   FormControl,
   RadioGroup,
   FormControlLabel,
+  FormLabel,
   Radio,
 } from "@mui/material";
 
 const CreateForm = ({ onCreate, onClose }) => {
-  const [newStudent, setNewStudent] = useState({
+  const [newUser, setNewUser] = useState({
     name: "",
     password: "",
+    email: "",
     userName: "",
     contactNo: "",
     status: "",
-    // Add other properties as needed
+    role: "",
   });
 
-//   const handleInputChange = (e) => {
-//     const { name, value } = e.target;
-//     setNewStudent((prevStudent) => ({
-//       ...prevStudent,
-//       [name]: value,
-//     }));
-//   };
-
-//   const handleStatusChange = (e) => {
-//     setNewStudent((prevStudent) => ({
-//       ...prevStudent,
-//       status: e.target.value,
-//     }));
-//   };
+  const [errors, setErrors] = useState({
+    name: false,
+    password: false,
+    email: false,
+  });
 
   const handleSubmit = () => {
-    onCreate(newStudent);
-    onClose();
+    const formErrors = {
+      name: newUser.name === "",
+      password: newUser.password.length !== 6 || newUser.password.length > 6 ,
+      email: !validateEmail(newUser.email),
+    };
+
+    setErrors(formErrors);
+
+    if (!Object.values(formErrors).some((error) => error)) {
+      onCreate(newUser);
+      onClose();
+    }
+  };
+
+  const validateEmail = (email) => {
+    // Simple email validation regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   return (
     <Dialog open onClose={onClose}>
-      <DialogTitle>Create Student</DialogTitle>
+      <DialogTitle>Create User</DialogTitle>
       <DialogContent>
         <TextField
           name="name"
           label="Name"
-          value={newStudent.name}
+          value={newUser.name}
           onChange={(e) =>
-            setNewStudent((prevState) => ({
-                  ...prevState,
-                  name: e.target.value,
-                }))
-              }
+            setNewUser((prevState) => ({
+              ...prevState,
+              name: e.target.value,
+            }))
+          }
           fullWidth
           margin="dense"
+          error={errors.name}
+          helperText={errors.name && "Name is required"}
         />
         <TextField
-          name="Contactno"
+          name="contactNo"
           label="Contact Number"
-          value={newStudent.contactNo}
+          value={newUser.contactNo}
           onChange={(e) =>
-            setNewStudent((prevState) => ({
-                  ...prevState,
-                  contactNo: e.target.value,
-                }))
-              }
+            setNewUser((prevState) => ({
+              ...prevState,
+              contactNo: e.target.value,
+            }))
+          }
           fullWidth
           margin="dense"
         />
         <TextField
-          name="Username"
+          name="email"
+          label="Email"
+          value={newUser.email}
+          onChange={(e) =>
+            setNewUser((prevState) => ({
+              ...prevState,
+              email: e.target.value,
+            }))
+          }
+          fullWidth
+          margin="dense"
+          error={errors.email}
+          helperText={errors.email && "Invalid email"}
+        />
+        <TextField
+          name="userName"
           label="Username"
-          value={newStudent.userName}
+          value={newUser.userName}
           onChange={(e) =>
-            setNewStudent((prevState) => ({
-                  ...prevState,
-                  userName: e.target.value,
-                }))
-              }
+            setNewUser((prevState) => ({
+              ...prevState,
+              userName: e.target.value,
+            }))
+          }
           fullWidth
           margin="dense"
         />
-         <TextField
-          name="Password"
+        <TextField
+          name="password"
           label="Password"
-          value={newStudent.password}
+          value={newUser.password}
           onChange={(e) =>
-            setNewStudent((prevState) => ({
-                  ...prevState,
-                  password: e.target.value,
-                }))
-              }
+            setNewUser((prevState) => ({
+              ...prevState,
+              password: e.target.value,
+            }))
+          }
           fullWidth
           margin="dense"
+          type="password"
+          error={errors.password}
+          helperText={errors.password && "Password must be 6 characters long"}
         />
-         <FormControl component="fieldset" margin="dense">
+        <FormControl component="fieldset" margin="dense">
+          <FormLabel component="legend">Status</FormLabel>
           <RadioGroup
+            row
+            aria-label="Status"
             name="status"
-            value={newStudent.status}
+            value={newUser.status}
             onChange={(e) =>
-                setNewStudent((prevState) => ({
-                    ...prevState,
-                    status: e.target.value,
-                  }))
-                }
+              setNewUser((prevState) => ({
+                ...prevState,
+                status: e.target.value,
+              }))
+            }
           >
-            <FormControlLabel
-              value="Active"
-              control={<Radio />}
-              label="Active"
-            />
-            <FormControlLabel
-              value="Blocked"
-              control={<Radio />}
-              label="Blocked"
-            />
+            <FormControlLabel value="Active" control={<Radio />} label="Active" />
+            <FormControlLabel value="Blocked" control={<Radio />} label="Blocked" />
           </RadioGroup>
         </FormControl>
-        {/* Add other fields as needed */}
+        <br />
+        <FormControl component="fieldset" margin="dense">
+          <FormLabel component="legend">Role</FormLabel>
+          <RadioGroup
+            row
+            aria-label="Role"
+            name="role"
+            value={newUser.role}
+            onChange={(e) =>
+              setNewUser((prevState) => ({
+                ...prevState,
+                role: e.target.value,
+              }))
+            }
+          >
+            <FormControlLabel value="Teacher" control={<Radio />} label="Teacher" />
+            <FormControlLabel value="Student" control={<Radio />} label="Student" />
+          </RadioGroup>
+        </FormControl>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="error">Cancel</Button>
-        <Button onClick={handleSubmit} variant="contained"
-              color="success">
+        <Button onClick={onClose} color="error">
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit} variant="contained" color="success">
           Create
         </Button>
       </DialogActions>

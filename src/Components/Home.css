@@ -1,0 +1,14 @@
+.card-wrap{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 40px auto;
+    padding: 20px 10px;
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 15px;
+    box-sizing: border-box;
+    @media (max-width: 768px) {
+        flex-direction: column;
+    }
+}
