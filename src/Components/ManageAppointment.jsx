@@ -5,16 +5,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import CloseIcon from "@mui/icons-material/Close";
 import EditCalendarIcon from "@mui/icons-material/EditCalendar";
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Select,
-  MenuItem,
-} from "@mui/material";
+import { Button, Divider,Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 import "./ManageAppoinment.css";
 import { database } from "../firebaseConfig";
 import { ref, onValue, push } from "firebase/database";
@@ -114,12 +105,46 @@ const ManageAppointment = () => {
 
     handleCloseDialog();
   };
-
+const renderAppointmentTable = (appointmentList, status) => {
+    const filteredAppointments = appointmentList.filter(appointment => appointment.status === status);
+    return (
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Date</TableCell>
+              <TableCell>Start Time</TableCell>
+              <TableCell>End Time</TableCell>
+              <TableCell>Student Name</TableCell>
+              <TableCell>Teacher Name</TableCell>
+              <TableCell>Description</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredAppointments.map((appointment) => (
+              <TableRow key={appointment.id}>
+                <TableCell>{appointment.date}</TableCell>
+                <TableCell>{appointment.startTime}</TableCell>
+                <TableCell>{appointment.endTime}</TableCell>
+                <TableCell>{appointment.studentName}</TableCell>
+                <TableCell>{appointment.teacherName}</TableCell>
+                <TableCell>{appointment.description}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  };
   return (
-    <div>
-      <Button onClick={handleOpenDialog} variant="contained" color="primary" className="">
+    <div >
+    <div className="Add-Btn">
+      <Button onClick={handleOpenDialog} variant="contained" color="success" className="">
         Add Appointment <EditCalendarIcon />
       </Button>
+
+    </div>
+    <Divider className="divider" />
       <div>
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -199,9 +224,9 @@ const ManageAppointment = () => {
             name="studentName"
             value={newAppointment.studentName}
             onChange={handleInputChange}
-            fullWidth
+            fullWidth 
           >
-            <MenuItem value="Select Student">Select Student</MenuItem>
+            <MenuItem value="SelectStudent" defaultValue>Select Student</MenuItem>
             {students.map((student) => (
               <MenuItem key={student.id} value={student.name}>
                 {student.name}
@@ -214,7 +239,7 @@ const ManageAppointment = () => {
             onChange={handleInputChange}
             fullWidth
           >
-            <MenuItem value="Select Teacher">Select Teacher</MenuItem>
+            <MenuItem value="Select Teacher" defaultValue>Select Teacher</MenuItem>
             {instructors.map((instructor) => (
               <MenuItem key={instructor.id} value={instructor.name}>
                 {instructor.name}
@@ -242,7 +267,17 @@ const ManageAppointment = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+   
+   
+      <h2>Appointment History</h2>
+      {renderAppointmentTable(appointments, 'history')}
+
+      <h2>Upcoming Appointments</h2>
+      {renderAppointmentTable(appointments, 'upcoming')}
+
+      <h2>Done Appointments</h2>
+      {renderAppointmentTable(appointments, 'done')}
+     </div>
   );
 };
 

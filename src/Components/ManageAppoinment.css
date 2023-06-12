@@ -29,3 +29,11 @@
     font-weight: 500;
     text-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
+.Add-Btn{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+.divider{
+    margin-bottom: 10px;
+}
