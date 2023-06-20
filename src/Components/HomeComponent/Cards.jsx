@@ -38,8 +38,8 @@ export default function MyComponent() {
         try {
           const studentsSnapshot = await get(ref(database, 'Students'));
           const instructorsSnapshot = await get(ref(database, 'Instructors'));
-          console.log('Students Snapshot:', studentsSnapshot.val());
-          console.log('Instructors Snapshot:', instructorsSnapshot.val());
+          // console.log('Students Snapshot:', studentsSnapshot.val());
+          // console.log('Instructors Snapshot:', instructorsSnapshot.val());
           const studentsData = studentsSnapshot.val();
           const instructorsData = instructorsSnapshot.val();
       
@@ -51,13 +51,13 @@ export default function MyComponent() {
           }, 0);
           const totalStudentCount = Object.keys(studentsData || {}).length;
           const totalTeacherCount = Object.keys(instructorsData || {}).length;
-          console.log('Active Student Count:', activeStudentCount);
-          console.log('Total Student Count:', totalStudentCount);
-          console.log('Total Teacher Count:', totalTeacherCount);
+          // console.log('Active Student Count:', activeStudentCount);
+          // console.log('Total Student Count:', totalStudentCount);
+          // console.log('Total Teacher Count:', totalTeacherCount);
       
           setData({ activeStudentCount, totalStudentCount, totalTeacherCount });
         } catch (error) {
-          console.error('Error fetching data from Firebase:', error);
+          // console.error('Error fetching data from Firebase:', error);
           setData({ activeStudentCount: 0, totalStudentCount: 0, totalTeacherCount: 0 });
         }
       };

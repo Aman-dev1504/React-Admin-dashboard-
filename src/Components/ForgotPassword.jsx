@@ -51,17 +51,14 @@ const ForgotPassword = ({ id, name, accountType, onClose, onSnackbarOpen }) => {
 
         set(userRef, { password })
           .then(() => {
-            console.log("Password updated successfully");
             onSnackbarOpen("Password updated successfully", "success");
             onClose(); // Close the dialog after password update
           })
           .catch((error) => {
-            console.error("Error updating password:", error);
             onSnackbarOpen("Failed to update password", "error");
           });
       })
       .catch((error) => {
-        console.error("Error fetching user data:", error);
         onSnackbarOpen("Failed to fetch user data", "error");
       });
   };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Card, CardContent, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material';
-import { ref, push, onValue } from 'firebase/database';
+import { ref, push, onValue,set } from 'firebase/database';
 import { database } from '../../firebaseConfig';
 import NotificationAddIcon from '@mui/icons-material/NotificationAdd';
 import './Notification.css';
@@ -56,13 +56,15 @@ const Notification = () => {
   };
 
   const handleSaveNotification = () => {
-    // Save the new notification to Firebase Realtime Database
-    const notificationRef = ref(database, 'Notifications');
-    push(notificationRef, {
+    const newNotificationId = push(ref(database, 'Notifications')).key;
+  
+    const notificationRef = ref(database, `Notifications/${newNotificationId}`);
+    set(notificationRef, {
       ...newNotification,
       createdAt: new Date().getTime(),
+      id: newNotificationId,
     });
-
+  
     handleCloseDialog();
   };
 
@@ -75,10 +77,10 @@ const Notification = () => {
       </Button>
       </div>
       <div className=' notification-list'>
-      {notifications.map((notification) => (
-        <Card key={notification.id} style={{ marginBottom: '10px' }} className='notification-card'>
-          <CardContent>
-            <Typography variant="h6" component="h4">
+      {notifications.map((notification,id ) => (
+        <Card  key={id} style={{ marginBottom: '10px' }} className='notification-card'>
+          <CardContent key={notification.id}>
+            <Typography variant="h6" component="h2">
               {notification.title}
             </Typography>
             <Typography color="textSecondary">

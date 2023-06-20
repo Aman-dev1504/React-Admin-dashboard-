@@ -75,7 +75,7 @@ const mdTheme = createTheme();
 
 export default function Dashboard() {
   const { logout, currentUser } = useContext(AuthContext);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const toggleDrawer = () => setOpen((prev) => !prev);
   const [selectedComponent, setSelectedComponent] = useState("home");
   const handleSignout = () => {

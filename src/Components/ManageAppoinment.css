@@ -34,6 +34,10 @@
     justify-content: center;
     margin-bottom: 10px;
 }
+.Add-Btn Button{
+    background-color:#2C3E50 !important;
+    color: #fff;
+}
 .divider{
     margin-bottom: 10px;
 }

@@ -4,9 +4,9 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import EditCalendarIcon from '@mui/icons-material/EditCalendar';
-import FeedbackIcon from '@mui/icons-material/Feedback';
+import AssistantIcon from '@mui/icons-material/Assistant';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import EngineeringIcon from '@mui/icons-material/Engineering';
+import HailIcon from '@mui/icons-material/Hail';
 import GradeIcon from '@mui/icons-material/Grade';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 const MainListItems = ({ setSelectedComponent }) => {
@@ -40,14 +40,14 @@ const MainListItems = ({ setSelectedComponent }) => {
 
       <ListItem button onClick={() => handleItemClick('manage-feedback')}>
         <ListItemIcon>
-          <FeedbackIcon />
+          <AssistantIcon />
         </ListItemIcon>
-        <ListItemText primary='Manage Feedback' />
+        <ListItemText primary='Manage Feedbacks' />
       </ListItem>
 
       <ListItem button onClick={() => handleItemClick('teachers-evaluation')}>
         <ListItemIcon>
-          <EngineeringIcon />
+          <HailIcon />
         </ListItemIcon>
         <ListItemText primary='Teacher Evaluation' />
       </ListItem>
@@ -56,7 +56,7 @@ const MainListItems = ({ setSelectedComponent }) => {
         <ListItemIcon>
           <CalendarMonthIcon />
         </ListItemIcon>
-        <ListItemText primary='Manage Appointment' />
+        <ListItemText primary='Manage Appointments' />
       </ListItem>
 
       <ListItem button onClick={() => handleItemClick('Manage-reviews')}>

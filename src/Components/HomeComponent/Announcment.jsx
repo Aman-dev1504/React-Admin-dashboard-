@@ -56,7 +56,6 @@ const Announcement = () => {
   };
 
   const handleSaveAnnouncement = () => {
-    // Save the new announcement to Firebase Realtime Database
     const announcementRef = ref(database, 'Announcements');
     push(announcementRef, {
       ...newAnnouncement,
@@ -75,10 +74,10 @@ const Announcement = () => {
     </Button>
     </div>
     <div className=' announcement-list'>
-    {announcements.map((announcement) => (
-      <Card key={announcement.id} style={{ marginBottom: '10px' }} className='announcement-card'>
+    {announcements.map((announcement,id) => (
+      <Card  key={id} style={{ marginBottom: '10px' }} className='announcement-card'>
         <CardContent>
-          <Typography variant="h6" component="h6">
+          <Typography variant="h6" component="h2">
             {announcement.title}
           </Typography>
           <Typography color="textSecondary">
