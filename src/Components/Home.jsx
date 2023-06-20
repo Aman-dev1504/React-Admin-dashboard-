@@ -4,10 +4,13 @@ import Announcement from './HomeComponent/Announcment'
 import Notification from './HomeComponent/Notification'
 import { Divider } from '@mui/material'
 import './Home.css'
-const Home = () => {
+const Home = ({ handleCardClick }) => {
+  const handleClick = () => {
+    handleCardClick('ManageUser'); 
+  };
   return (
     <div>
-     <Cards/>
+     <Cards handleCardClick={handleClick}/>
       <Divider style={{marginTop:"20px"}}/>
      <div className='card-wrap'>
       <Announcement/>

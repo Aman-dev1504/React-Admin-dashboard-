@@ -78,10 +78,10 @@ const Graph = ({ ratings }) => {
       <div style={{ display: "inline-block", marginLeft: "20px" }}>
         {selectedSliceData ? (
           <div>
-            <h3>Data for Slice {selectedSliceIndex + 1}</h3>
+            <h3>Instructors having {selectedSliceIndex + 1} Star Rating</h3>
             <ul>
               {selectedSliceData.map((instructor, index) => (
-                <li key={index}>
+                <li key={index} style={{color:"#393939"}}>
                   {instructor.instructor}: {instructor.rating}
                 </li>
               ))}

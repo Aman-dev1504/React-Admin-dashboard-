@@ -80,12 +80,12 @@ const ManageReviews = () => {
           <Table className="table">
             <TableHead className="th">
               <TableRow>
-                <TableCell>Feedback id</TableCell>
-                <TableCell>studentId</TableCell>
-                <TableCell>studentName</TableCell>
-                <TableCell> feedback</TableCell>
-                <TableCell>rating</TableCell>
-                <TableCell>instructorId</TableCell>
+                <TableCell>Feedback Id</TableCell>
+                <TableCell>Student Id</TableCell>
+                <TableCell>Student Name</TableCell>
+                <TableCell>Feedback</TableCell>
+                <TableCell>Rating</TableCell>
+                <TableCell>Instructor Id</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>

@@ -73,6 +73,8 @@ const Drawer = styled(MuiDrawer, {
 
 const mdTheme = createTheme();
 
+
+
 export default function Dashboard() {
   const { logout, currentUser } = useContext(AuthContext);
   const [open, setOpen] = useState(true);
@@ -81,6 +83,9 @@ export default function Dashboard() {
   const handleSignout = () => {
     logout();
     auth.signOut();
+  };
+  const handleCardClick = (newState) => {
+    setSelectedComponent(newState);
   };
   return (
     <ThemeProvider theme={mdTheme}>
@@ -159,7 +164,7 @@ export default function Dashboard() {
         >
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            {selectedComponent === "home" && <Home />}
+            {selectedComponent === "home" && <Home handleCardClick={handleCardClick}/>}
             {selectedComponent === "ManageUser" && <ManageUser />}
             {selectedComponent === "RequestAccount" && <RequestAccount />}
             {selectedComponent === "manage-feedback" && <ManageFeedback />}
